@@ -19,19 +19,19 @@ const Login = () => {
                 'http://localhost:8001/users/login',
                 data
             );
-            history('/')
-            localStorage.setItem("Token", response?.data?.data?.token)
-            alert("Login Successfully")
-
+            localStorage.setItem("Token", response?.data?.data?.token);
             console.log('Login successful', response?.data);
+            history('/profile');
         } catch (error) {
-          setError(error?.response?.data)
+            setError(error?.response?.data);
             console.error('Login error', error?.response?.data);
         }
     };
     useEffect(() => {
-
-    },[])
+        if (formData) {
+            onSubmit(formData); // Call onSubmit with the form data
+        }
+    }, [formData]);
 
     console.log(formData);
 

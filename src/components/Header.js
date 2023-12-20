@@ -1,43 +1,26 @@
-// Header.js
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Header = ({ onLogout }) => {
+const Header = () => {
     const history = useNavigate();
     const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Check if a token is present in localStorage
         const token = localStorage.getItem('Token');
-
-        if (token) {
-            // You may want to implement token verification logic here
-            // For simplicity, we'll assume the token is valid if present
-            setLoggedIn(true);
-        } else {
-             setLoggedIn(false);
-        }
-    }, [loggedIn]);
+        setLoggedIn(!!token); // Use !! to convert the token to a boolean
+    }, []);
 
 
     const handleLogout = async () => {
         try {
-
             localStorage.removeItem('Token');
             setLoggedIn(false);
             console.log("Logout successful");
             history('/login');
-            console.log(localStorage.getItem("Token"));
-            
         } catch (error) {
             console.log("Logout failed", error);
         }
-
-        // Perform logout logic
-        // For now, just navigate to the home page
-        onLogout();
-        history('/login');
     };
 
     return (

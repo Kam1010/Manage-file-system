@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import {saveAs} from 'file-saver';
 import axios from 'axios';
 import {
   Table,
@@ -63,6 +64,27 @@ const Profile = () => {
     }
   };
 
+  const handleDownload = async () => {
+    const filename = `${images.data.originalname}`; // Replace with the actual filename
+    console.log("images>>>", images);
+    try {
+      const response = await axios.get(`http://localhost:3001/files/download/${filename}`, {
+        responseType: 'blob',
+      });
+
+      // Create a link element to trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading image', error);
+    }
+  };
+
   return (
     <div>
       <h2>Profile Page</h2>
@@ -86,30 +108,32 @@ const Profile = () => {
               <TableCell>File Name</TableCell>
               <TableCell>Image</TableCell>
               <TableCell>Actions</TableCell>
-              <TableCell>Download</TableCell>
+              {/* <TableCell>Download</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {images?.data?.map((image) => (
-              <TableRow key={image._id}>
-                <TableCell>
-                  <p>{image.originalname}</p>
-                </TableCell>
-                <TableCell>
-                  <img
-                    src={`http://localhost:8001/files/${image.uniqueCode}`}
-                    alt={`Image ${image.uniqueCode}`}
-                    style={{ width: '50px', height: '50px' }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleDelete(image._id)}>Delete</Button>
-                </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleDelete(image._id)}>Download</Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {images?.data?.map((image) => {
+              return (
+                <TableRow key={image._id}>
+                  <TableCell>
+                    <p>{image.originalname}</p>
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={`http://localhost:8001/files/${image.uniqueCode}`}
+                      alt={`Image ${image.uniqueCode}`}
+                      style={{ width: '50px', height: '50px' }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleDelete(image._id)}>Delete</Button>
+                  </TableCell>
+                  {/* <TableCell>
+                    <Button onClick={() => handleDownload(image.originalname)}>Download</Button>
+                  </TableCell> */}
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>
